@@ -32,7 +32,6 @@ def format_time(seconds: int) -> str:
 
 def clear():
     command = {'Linux': 'clear', 'Windows': 'cls'}
-
     os.system(command[platform.system()])
 
 
