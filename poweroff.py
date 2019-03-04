@@ -5,28 +5,17 @@ import argparse
 import platform
 
 
-SYSTEM_UTIL_NAMES = {'Linux': {'poweroff': 'poweroff',
-                               'clear': 'clear'},
-                     'Windows': {'poweroff': 'shutdown /s',
-                                 'clear': 'cls'}}
-
-
-def run():
-    commands = SYSTEM_UTIL_NAMES[platform.system()]
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--seconds', '-s', default=0, type=int, required=False,
-                        help='Amount of delay in seconds', dest='seconds')
-    args = parser.parse_args()
+def run(args):
     seconds = args.seconds
     if seconds == 0:
-        os.system(commands['clear'])
+        clear()
         print('Input delay time in seconds:')
         seconds = int(input())
     while True:
-        os.system(commands['clear'])
+        clear()
         if seconds == 0:
             print('Done!')
-            os.system(commands['poweroff'])
+            poweroff()
             break
         print('Time remaining: ' + format_time(seconds))
         time.sleep(1)
@@ -41,8 +30,26 @@ def format_time(seconds: int) -> str:
     return '{:02d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
 
 
+def clear():
+    command = {'Linux': 'clear', 'Windows': 'cls'}
+
+    os.system(command[platform.system()])
+
+
+def poweroff():
+    command = {'Linux': 'poweroff', 'Windows': 'shutdown /s'}
+    os.system(command[platform.system()])
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--seconds', '-s', default=0, type=int, required=False,
+                        help='Amount of delay in seconds', dest='seconds')
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
     try:
-        run()
+        run(parse_args())
     except KeyboardInterrupt:
-        pass
+        print()
